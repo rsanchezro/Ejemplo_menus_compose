@@ -1,11 +1,14 @@
 package com.example.ejemplo_menus
 
+import android.R.attr.enabled
+import android.R.attr.type
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +18,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+
+
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -41,65 +50,72 @@ class MainActivity : ComponentActivity() {
         setContent {
             Ejemplo_menusTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Pantalla_Principal(modificador = Modifier.padding(innerPadding))
+                    MiExposedDropDownMenuBox(modificador = Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 
-@Composable
-fun Pantalla_Principal(modificador: Modifier= Modifier)
-{
-    var valor_texto by remember { mutableStateOf("") }
-    var menuboton_expandido by remember { mutableStateOf(false) }
-    val context = LocalContext.current
 
-    Box(modifier=modificador.fillMaxSize(), contentAlignment = Alignment.Center)
-    {
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            //Meto en el mismo contexto el boton y el menu, porque sino el menu se fija sobre
-            //el layout padre
-            Box( )
-            {
-                Column {
-                Button(onClick = {
-                    menuboton_expandido = !menuboton_expandido
-                }) { Text("Abrir menú") }
-                Menu_boton(
-                    menuboton_expandido,
-                    //State hosting
-                    { menuboton_expandido = !menuboton_expandido },
-                    //State hosting, trasladar hacia arriba la responsabilidad de gestionar la funcionalidad
-                    onclickItem = {
-                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                        menuboton_expandido = false
-                    })
-            }}
-            Spacer(modifier = Modifier.padding(10.dp))
-            TextField(value = valor_texto, onValueChange ={valor_texto = it}  )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MiExposedDropDownMenuBox(modificador: Modifier= Modifier)
+{
+    var menu_expandido by remember { mutableStateOf(false) }
+    var valor_seleccionado by remember { mutableStateOf("") }
+    ExposedDropdownMenuBox(
+        expanded = menu_expandido,
+        onExpandedChange = {menu_expandido=!menu_expandido},
+        modifier = modificador.padding(top = 32.dp)
+        ) {
+        //Como contenido tiene un TextField no editable
+        TextField(
+            value = valor_seleccionado,
+            readOnly = true,//No voy a permitir introducir nada
+            onValueChange = {},
+            label = { Text("Idioma") },
+            //Esto es necesario para que se ancle el menu al TextField, si no se pone no aparece el menu
+            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
+            //Icono que se muestra al final del TextField, es un composable
+            trailingIcon ={
+                //Función composable que muestra un icono diferente (flecha) en función del valor
+                // que se le pasa, presenta una flecha hacia abajo o hacia arriba
+                ExposedDropdownMenuDefaults.TrailingIcon(menu_expandido)
+            }
+        )
+
+        DropdownMenu(
+            expanded = menu_expandido,
+            onDismissRequest = {
+                menu_expandido = false
+            }, //Cuando se cierra el menu lo que quiero hacer
+        )
+        {
+            DropdownMenuItem(text = { Text("Ingles") }, onClick = {
+                valor_seleccionado = "Ingles"
+                menu_expandido = false
+            })
+            DropdownMenuItem(text = { Text("Español") }, onClick = {
+                valor_seleccionado = "Español"
+                menu_expandido = false
+            })
+            DropdownMenuItem(text = { Text("Frances") }, onClick = {
+                valor_seleccionado = "Frances"
+                menu_expandido = false
+            })
+
         }
     }
 }
 
-@Composable
-fun Menu_boton(menu_expandido: Boolean,dissmis: () -> Unit = {},onclickItem: (String) -> Unit = {} ) {
-
-
-
-
-    DropdownMenu(expanded=menu_expandido, onDismissRequest = dissmis , offset = DpOffset(x=80.dp,y=0.dp)) {
-        DropdownMenuItem(text = { Text("Opción 1") }, leadingIcon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_call), contentDescription = null) }, onClick = { onclickItem("Opcion 1") })
-        DropdownMenuItem(text = { Text("Opción 2") }, onClick = { onclickItem("Opcion 2") })
-        DropdownMenuItem(text = { Text("Opción 3") }, onClick = { onclickItem("Opcion 3") })
-    }
-}
 
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     Ejemplo_menusTheme {
-       Pantalla_Principal()
+       MiExposedDropDownMenuBox()
     }
 }
