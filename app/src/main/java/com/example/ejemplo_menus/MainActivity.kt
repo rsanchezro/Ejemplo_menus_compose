@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.example.ejemplo_menus.ui.theme.Ejemplo_menusTheme
 
 class MainActivity : ComponentActivity() {
@@ -67,7 +68,9 @@ fun Pantalla_Principal(modificador: Modifier= Modifier)
                 }) { Text("Abrir menú") }
                 Menu_boton(
                     menuboton_expandido,
+                    //State hosting
                     { menuboton_expandido = !menuboton_expandido },
+                    //State hosting, trasladar hacia arriba la responsabilidad de gestionar la funcionalidad
                     onclickItem = {
                         Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         menuboton_expandido = false
@@ -83,7 +86,7 @@ fun Pantalla_Principal(modificador: Modifier= Modifier)
 fun Menu_boton(menu_expandido: Boolean,dissmis: () -> Unit = {},onclickItem: (String) -> Unit = {} ) {
 
 
-    Log.i("INFO","Entra en la funcion menu_boton $menu_expandido")
+
 
     DropdownMenu(expanded=menu_expandido, onDismissRequest = dissmis , offset = DpOffset(x=80.dp,y=0.dp)) {
         DropdownMenuItem(text = { Text("Opción 1") }, leadingIcon = { Icon(painter = painterResource(id = android.R.drawable.ic_menu_call), contentDescription = null) }, onClick = { onclickItem("Opcion 1") })
