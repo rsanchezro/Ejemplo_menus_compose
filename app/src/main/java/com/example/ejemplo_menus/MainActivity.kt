@@ -19,6 +19,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 
@@ -77,7 +78,8 @@ fun MiExposedDropDownMenuBox(modificador: Modifier= Modifier)
             onValueChange = {},
             label = { Text("Idioma") },
             //Esto es necesario para que se ancle el menu al TextField, si no se pone no aparece el menu
-            modifier = Modifier.menuAnchor(type = MenuAnchorType.PrimaryEditable, enabled = true),
+            //El primer parametro de menuAnchor es el tipo de menu, existen 3 tipos
+            modifier = Modifier.menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
             //Icono que se muestra al final del TextField, es un composable
             trailingIcon ={
                 //Función composable que muestra un icono diferente (flecha) en función del valor
